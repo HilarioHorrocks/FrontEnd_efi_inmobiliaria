@@ -1,12 +1,105 @@
 import React, { useState } from 'react';
 import { getPropertyImages, getLocationSpecificImages } from '../utils/propertyImages';
+import { salesService } from '../services/sales';
+import { rentalsService } from '../services/rentals';
+import { useProperties } from '../contexts/PropertiesContext';
 import './PropertyDetailsModal.css';
 
 const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite, user }) => {
   if (!property) return null;
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [actionMessage, setActionMessage] = useState('');
+  const { fetchProperties } = useProperties();
   const propertyImages = getLocationSpecificImages(property);
+
+  // Función para manejar la compra de propiedad
+  const handlePurchase = async () => {
+    if (!user || isProcessing) return;
+    
+    setIsProcessing(true);
+    setActionMessage('Procesando compra...');
+    
+    try {
+      const response = await salesService.purchaseProperty(property.id);
+      
+      if (response.data.success) {
+        setActionMessage('¡Compra realizada exitosamente! 🎉');
+        
+        // Mostrar detalles de la compra
+        setTimeout(() => {
+          alert(`¡Felicitaciones! Has comprado la propiedad:\n\n` +
+                `📍 ${property.direccion}\n` +
+                `💰 Precio: $${property.precio.toLocaleString()}\n` +
+                `📋 Estado: Procesando\n\n` +                `Recibirás más información por correo electrónico.`);
+          
+          // Cerrar modal y actualizar lista de propiedades
+          onClose();
+          fetchProperties(); // Actualizar la lista de propiedades
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error en compra:', error);
+      setActionMessage('❌ Error al procesar la compra');
+      
+      if (error.response?.data?.error) {
+        alert(`Error: ${error.response.data.error}`);
+      } else {
+        alert('Error al procesar la compra. Por favor, intenta nuevamente.');
+      }
+    } finally {
+      setTimeout(() => {
+        setIsProcessing(false);
+        setActionMessage('');
+      }, 3000);
+    }
+  };
+
+  // Función para manejar el alquiler de propiedad
+  const handleRent = async () => {
+    if (!user || isProcessing) return;
+    
+    setIsProcessing(true);
+    setActionMessage('Procesando alquiler...');
+    
+    try {
+      const response = await rentalsService.rentProperty(property.id, 12); // 12 meses por defecto
+      
+      if (response.data.success) {
+        setActionMessage('¡Alquiler procesado exitosamente! 🏠');
+        
+        const details = response.data.details;
+        // Mostrar detalles del alquiler
+        setTimeout(() => {
+          alert(`¡Felicitaciones! Has alquilado la propiedad:\n\n` +
+                `📍 ${property.direccion}\n` +
+                `💰 Alquiler mensual: $${details.monto_mensual.toLocaleString()}\n` +
+                `🔒 Depósito: $${details.monto_deposito.toLocaleString()}\n` +
+                `📅 Duración: ${details.duracion_meses} meses\n` +
+                `📋 Estado: Procesando\n\n` +                `Recibirás el contrato por correo electrónico.`);
+          
+          // Cerrar modal y actualizar lista de propiedades
+          onClose();
+          fetchProperties(); // Actualizar la lista de propiedades
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error en alquiler:', error);
+      setActionMessage('❌ Error al procesar el alquiler');
+      
+      if (error.response?.data?.error) {
+        alert(`Error: ${error.response.data.error}`);
+      } else {
+        alert('Error al procesar el alquiler. Por favor, intenta nuevamente.');
+      }
+    } finally {
+      setTimeout(() => {
+        setIsProcessing(false);
+        setActionMessage('');
+      }, 3000);
+    }
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-AR', {
@@ -160,14 +253,16 @@ const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite,
                 <div className="primary-actions">
                   <button 
                     className="btn-success"
-                    onClick={() => alert('Funcionalidad de compra en desarrollo. ¡Pronto estará disponible!')}
+                    onClick={handlePurchase}
+                    disabled={isProcessing}
                   >
                     <span>💰</span>
                     Comprar Propiedad
                   </button>
                   <button 
                     className="btn-info"
-                    onClick={() => alert('Funcionalidad de alquiler en desarrollo. ¡Pronto estará disponible!')}
+                    onClick={handleRent}
+                    disabled={isProcessing}
                   >
                     <span>🏠</span>
                     Alquilar Propiedad
@@ -211,6 +306,7 @@ const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite,
                 </div>
               )}
             </div>
+            {actionMessage && <div className="action-message">{actionMessage}</div>}
           </div>
         </div>
       </div>

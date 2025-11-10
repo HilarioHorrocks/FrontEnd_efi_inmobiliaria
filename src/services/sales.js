@@ -5,4 +5,8 @@ export const salesService = {
   getByUser: (userId) => axiosInstance.get(`/sales/${userId}`),
   update: (id, data) => axiosInstance.put(`/sales/${id}`, data),
   cancel: (id) => axiosInstance.delete(`/sales/${id}`),
+  // Nuevo: Compra directa de propiedad
+  purchaseProperty: (propertyId) => axiosInstance.post("/sales/purchase", { 
+    id_propiedad: propertyId 
+  }),
 }

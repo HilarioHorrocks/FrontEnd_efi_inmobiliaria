@@ -15,7 +15,6 @@ import ClientsPage from "./pages/ClientsPage"
 import AdminPage from "./pages/AdminPage"
 import MyRentalsPage from "./pages/MyRentalsPage"
 import MySalesPage from "./pages/MySalesPage"
-import TailwindTest from "./components/TailwindTest"
 
 import "./App.css"
 
@@ -66,7 +65,6 @@ function App() {
                     }
                   />
                 </Routes>
-                <TailwindTest />
               </SalesProvider>
             </RentalsProvider>
           </ClientsProvider>

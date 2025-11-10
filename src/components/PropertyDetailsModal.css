@@ -389,6 +389,40 @@
   font-weight: 500;
 }
 
+/* Mensaje de acción (procesando compra/alquiler) */
+.action-message {
+  margin-top: 16px;
+  padding: 12px;
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  color: #155724;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+/* Estados deshabilitados para botones de procesamiento */
+.btn-success:disabled,
+.btn-info:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-success:disabled:hover,
+.btn-info:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 10px;
