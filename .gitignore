@@ -1,0 +1,145 @@
+# Dependencies
+node_modules/
+.npm
+.yarn
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+out/
+
+# Vite
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# ESLint cache
+.eslintcache
+
+# Stylelint cache
+.stylelintcache
+
+# Prettier cache
+.prettiercache
+
+# Package manager lock files (uncomment the one you're NOT using)
+# package-lock.json  # if using yarn or pnpm
+# yarn.lock         # if using npm or pnpm
+# pnpm-lock.yaml    # if using npm or yarn
+
+# Storybook build outputs
+.out
+.storybook-out
+storybook-static
+
+# Temporary folders
+tmp/
+temp/
+
+# Local Netlify folder
+.netlify
+
+# Vercel
+.vercel
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Tailwind CSS
+# Uncomment if you want to ignore Tailwind's output files
+# tailwind.output.css
+
+# React specific
+# Uncomment if you want to ignore React build artifacts
+# build/static/js/*.map
+# build/static/css/*.map
+
+# Testing
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Backup files
+*.backup
+*.bak
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+
+# Bundle analyzer reports
+bundle-report.html
+bundle-analyzer-report.html
+
+# TypeScript (if you add TS later)
+*.tsbuildinfo
+
+# PWA files
+sw.js
+sw.js.map
+workbox-*.js
+workbox-*.js.map
