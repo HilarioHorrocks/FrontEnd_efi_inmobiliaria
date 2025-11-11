@@ -4,20 +4,41 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { useProperties } from "../contexts/PropertiesContext"
 import { useAuth } from "../contexts/AuthContext"
+import { useRentals } from "../contexts/RentalsContext"
+import { useSales } from "../contexts/SalesContext"
 import PropertyDetailsModal from "../components/PropertyDetailsModal"
+import PropertyFilters from "../components/PropertyFilters"
 import { getPropertyImages } from "../utils/propertyImages"
 import "./HomePage.css"
 
 export default function HomePage() {
   const { properties, fetchProperties } = useProperties()
   const { user } = useAuth()
+  const { rentals, fetchRentalsByUser } = useRentals()
+  const { sales, fetchSalesByUser } = useSales()
   const [selectedProperty, setSelectedProperty] = useState(null)
   const [favorites, setFavorites] = useState([])
   const [showFavorites, setShowFavorites] = useState(false)
+  const [filters, setFilters] = useState({})
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     fetchProperties()
-  }, [])
+    if (user?.id) {
+      fetchRentalsByUser(user.id)
+      fetchSalesByUser(user.id)
+    }
+  }, [user])
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters)
+    fetchProperties(newFilters)
+  }
+
+  const handleSearch = (term) => {
+    setSearchTerm(term)
+    // Aquí puedes implementar la lógica de búsqueda si es necesario
+  }
 
   // Cargar favoritos del localStorage cuando el usuario esté logueado
   useEffect(() => {
@@ -37,6 +58,8 @@ export default function HomePage() {
 
   const handleCloseModal = () => {
     setSelectedProperty(null)
+    // Refrescar las propiedades al cerrar el modal (en caso de que se haya realizado una compra/alquiler)
+    fetchProperties(filters)
   }
 
 
@@ -84,12 +107,20 @@ export default function HomePage() {
       </div>
 
       <div className="container">
+        {/* Filtros de búsqueda */}
+        {user && (
+          <PropertyFilters 
+            onFilterChange={handleFilterChange}
+            onSearch={handleSearch}
+          />
+        )}
+
         {/* Sección de favoritos para usuarios logueados */}
         {user && (
           <div className="favorites-section">
             <div className="favorites-header">
               <h2>
-                {showFavorites ? '❤️ Mis Favoritos' : '🏠 Todas las Propiedades'}
+                {showFavorites ? '❤️ Mis Favoritos' : 'Todas las Propiedades'}
                 {favorites.length > 0 && (
                   <span className="favorites-count">({favorites.length})</span>
                 )}
@@ -194,6 +225,8 @@ export default function HomePage() {
           onToggleFavorite={toggleFavorite}
           isFavorite={isFavorite(selectedProperty.id)}
           user={user}
+          userRentals={rentals}
+          userSales={sales}
         />
       )}
     </div>

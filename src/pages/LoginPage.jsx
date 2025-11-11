@@ -20,7 +20,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password)
-      navigate("/dashboard")
+      navigate("/")
     } catch (err) {
       setError(err.response?.data?.error || "Error al iniciar sesión")
     } finally {

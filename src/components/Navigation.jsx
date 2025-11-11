@@ -59,7 +59,9 @@ export const Navigation = () => {
                 </>
               )}
               <li>
-                <span>{user.nombre}</span>
+                <Link to="/profile" className="user-profile-link">
+                  {user.nombre}
+                </Link>
               </li>
               <li>
                 <button onClick={handleLogout}>Logout</button>

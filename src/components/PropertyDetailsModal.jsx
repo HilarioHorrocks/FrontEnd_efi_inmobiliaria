@@ -3,16 +3,43 @@ import { getPropertyImages, getLocationSpecificImages } from '../utils/propertyI
 import { salesService } from '../services/sales';
 import { rentalsService } from '../services/rentals';
 import { useProperties } from '../contexts/PropertiesContext';
+import { useRentals } from '../contexts/RentalsContext';
+import { useSales } from '../contexts/SalesContext';
 import './PropertyDetailsModal.css';
 
-const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite, user }) => {
+const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite, user, userRentals = [], userSales = [] }) => {
   if (!property) return null;
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [actionMessage, setActionMessage] = useState('');
+  const [showRentalForm, setShowRentalForm] = useState(false);
+  const [rentalFormData, setRentalFormData] = useState({
+    fecha_inicio: '',
+    fecha_fin: '',
+    monto_mensual: Math.round(property.precio / 100),
+    monto_deposito: Math.round(property.precio / 100) * 2,
+    monto_administracion: Math.round(property.precio / 100) * 0.1, // 10% del alquiler mensual
+    renovacion_automatica: true, // Por defecto activada
+    servicios_incluidos: ['Internet', 'Seguridad 24hs'], // Servicios básicos precargados
+    observaciones: ''
+  });
   const { fetchProperties } = useProperties();
+  const { fetchRentalsByUser } = useRentals();
+  const { fetchSalesByUser } = useSales();
   const propertyImages = getLocationSpecificImages(property);
+
+  // Verificar si el usuario ya tiene esta propiedad alquilada (activo o pendiente)
+  const hasActiveRental = userRentals.some(
+    rental => rental.id_propiedad === property.id && 
+    (rental.estado === 'activo' || rental.estado === 'pendiente')
+  );
+
+  // Verificar si el usuario ya compró esta propiedad
+  const hasActiveSale = userSales.some(
+    sale => sale.id_propiedad === property.id && 
+    sale.estado === 'finalizada'
+  );
 
   // Función para manejar la compra de propiedad
   const handlePurchase = async () => {
@@ -31,17 +58,20 @@ const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite,
         setTimeout(() => {
           alert(`¡Felicitaciones! Has comprado la propiedad:\n\n` +
                 `📍 ${property.direccion}\n` +
-                `💰 Precio: $${property.precio.toLocaleString()}\n` +
-                `📋 Estado: Procesando\n\n` +                `Recibirás más información por correo electrónico.`);
+                `Precio: $${property.precio.toLocaleString()}\n` +
+                `Estado: Procesando\n\n`);
           
-          // Cerrar modal y actualizar lista de propiedades
-          onClose();
+          // Cerrar modal y actualizar lista de propiedades y ventas
           fetchProperties(); // Actualizar la lista de propiedades
+          if (user?.id) {
+            fetchSalesByUser(user.id); // Actualizar las ventas del usuario
+          }
+          onClose();
         }, 2000);
       }
     } catch (error) {
       console.error('Error en compra:', error);
-      setActionMessage('❌ Error al procesar la compra');
+      setActionMessage('Error al procesar la compra');
       
       if (error.response?.data?.error) {
         alert(`Error: ${error.response.data.error}`);
@@ -57,36 +87,64 @@ const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite,
   };
 
   // Función para manejar el alquiler de propiedad
-  const handleRent = async () => {
+  const handleRentClick = () => {
+    setShowRentalForm(true);
+  };
+
+  const handleRentalFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setRentalFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleServiciosChange = (servicio) => {
+    setRentalFormData(prev => {
+      const servicios = prev.servicios_incluidos.includes(servicio)
+        ? prev.servicios_incluidos.filter(s => s !== servicio)
+        : [...prev.servicios_incluidos, servicio];
+      return { ...prev, servicios_incluidos: servicios };
+    });
+  };
+
+  const handleRentalFormSubmit = async (e) => {
+    e.preventDefault();
     if (!user || isProcessing) return;
     
     setIsProcessing(true);
     setActionMessage('Procesando alquiler...');
     
     try {
-      const response = await rentalsService.rentProperty(property.id, 12); // 12 meses por defecto
+      const response = await rentalsService.rentProperty(property.id, rentalFormData);
       
       if (response.data.success) {
-        setActionMessage('¡Alquiler procesado exitosamente! 🏠');
+        setActionMessage('¡Alquiler procesado exitosamente!');
         
-        const details = response.data.details;
-        // Mostrar detalles del alquiler
+        // Calcular duración en meses
+        const inicio = new Date(rentalFormData.fecha_inicio);
+        const fin = new Date(rentalFormData.fecha_fin);
+        const meses = Math.round((fin - inicio) / (1000 * 60 * 60 * 24 * 30));
+        
         setTimeout(() => {
           alert(`¡Felicitaciones! Has alquilado la propiedad:\n\n` +
                 `📍 ${property.direccion}\n` +
-                `💰 Alquiler mensual: $${details.monto_mensual.toLocaleString()}\n` +
-                `🔒 Depósito: $${details.monto_deposito.toLocaleString()}\n` +
-                `📅 Duración: ${details.duracion_meses} meses\n` +
-                `📋 Estado: Procesando\n\n` +                `Recibirás el contrato por correo electrónico.`);
+                ` Alquiler mensual: $${rentalFormData.monto_mensual.toLocaleString()}\n` +
+                ` Depósito: $${rentalFormData.monto_deposito.toLocaleString()}\n` +
+                ` Duración: ${meses} meses\n` +
+                ` Estado: Pendiente de aprobación\n\n`);
           
-          // Cerrar modal y actualizar lista de propiedades
+          // Actualizar tanto las propiedades como los alquileres del usuario
+          fetchProperties();
+          if (user?.id) {
+            fetchRentalsByUser(user.id);
+          }
           onClose();
-          fetchProperties(); // Actualizar la lista de propiedades
         }, 2000);
       }
     } catch (error) {
       console.error('Error en alquiler:', error);
-      setActionMessage('❌ Error al procesar el alquiler');
+      setActionMessage('Error al procesar el alquiler');
       
       if (error.response?.data?.error) {
         alert(`Error: ${error.response.data.error}`);
@@ -199,17 +257,14 @@ const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite,
 
             <div className="property-features">
               <div className="feature">
-                <span className="feature-icon">📐</span>
+                <span className="feature-icon"></span>
                 <span>{property.tamano} m²</span>
               </div>
               <div className="feature">
-                <span className="feature-icon">🏠</span>
+                <span className="feature-icon"></span>
                 <span>{getTypeText(property.tipo)}</span>
               </div>
-              <div className="feature">
-                <span className="feature-icon">👤</span>
-                <span>Agente: Juan Pérez</span>
-              </div>
+            
             </div>
 
             <div className="description">
@@ -233,10 +288,7 @@ const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite,
                   <span className="icon">🚗</span>
                   <span>Garage</span>
                 </div>
-                <div className="feature-item">
-                  <span className="icon">🏊</span>
-                  <span>Amenities</span>
-                </div>
+           
                 <div className="feature-item">
                   <span className="icon">🔥</span>
                   <span>Calefacción</span>
@@ -248,34 +300,172 @@ const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite,
               </div>
             </div>            {/* Botones de acción */}
             <div className="action-buttons">
+              {/* Formulario de alquiler */}
+              {showRentalForm && user && user.rol === 'cliente' && property.estado === 'disponible' && (
+                <div className="rental-form">
+                  <h3>📋 Solicitud de Alquiler</h3>
+                  <p className="form-subtitle">Completa las fechas para solicitar el alquiler de esta propiedad</p>
+                  
+                  <form onSubmit={handleRentalFormSubmit}>
+                    {/* Campos editables: Solo fechas */}
+                    <div className="form-section">
+                      <h4>📅 Período de Alquiler</h4>
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Fecha de Inicio *</label>
+                          <input
+                            type="date"
+                            name="fecha_inicio"
+                            value={rentalFormData.fecha_inicio}
+                            onChange={handleRentalFormChange}
+                            required
+                            min={new Date().toISOString().split('T')[0]}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Fecha de Fin *</label>
+                          <input
+                            type="date"
+                            name="fecha_fin"
+                            value={rentalFormData.fecha_fin}
+                            onChange={handleRentalFormChange}
+                            required
+                            min={rentalFormData.fecha_inicio || new Date().toISOString().split('T')[0]}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Campos de solo lectura: Costos */}
+                    <div className="form-section readonly-section">
+                      <h4>💰 Costos del Alquiler</h4>
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Monto Mensual ($)</label>
+                          <input
+                            type="text"
+                            value={`$${rentalFormData.monto_mensual.toLocaleString()}`}
+                            readOnly
+                            className="readonly-input"
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Depósito (2 meses) ($)</label>
+                          <input
+                            type="text"
+                            value={`$${rentalFormData.monto_deposito.toLocaleString()}`}
+                            readOnly
+                            className="readonly-input"
+                          />
+                        </div>
+                      </div>
+                      {rentalFormData.monto_administracion > 0 && (
+                        <div className="form-group">
+                          <label>Gastos de Administración ($)</label>
+                          <input
+                            type="text"
+                            value={`$${rentalFormData.monto_administracion.toLocaleString()}`}
+                            readOnly
+                            className="readonly-input"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Información de servicios (solo lectura) */}
+                    <div className="form-section readonly-section">
+                      <h4>✅ Servicios Incluidos</h4>
+                      <div className="servicios-info">
+                        {rentalFormData.servicios_incluidos.length > 0 ? (
+                          <ul className="servicios-list">
+                            {rentalFormData.servicios_incluidos.map(servicio => (
+                              <li key={servicio}>✓ {servicio}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="no-servicios">No incluye servicios adicionales</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Observaciones del cliente */}
+                    <div className="form-group">
+                      <label>Comentarios Adicionales (Opcional)</label>
+                      <textarea
+                        name="observaciones"
+                        value={rentalFormData.observaciones}
+                        onChange={handleRentalFormChange}
+                        rows="3"
+                        placeholder="Agrega cualquier comentario o consulta sobre el alquiler..."
+                      />
+                    </div>
+
+                    <div className="form-actions">
+                      <button type="submit" className="btn-success" disabled={isProcessing}>
+                        <span>✅</span>
+                        Solicitar Alquiler
+                      </button>
+                      <button 
+                        type="button" 
+                        className="btn-secondary" 
+                        onClick={() => setShowRentalForm(false)}
+                        disabled={isProcessing}
+                      >
+                        <span>❌</span>
+                        Cancelar
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
               {/* Botones principales de compra/alquiler solo para clientes logueados */}
-              {user && user.rol === 'cliente' && property.estado === 'disponible' && (
+              {!showRentalForm && user && user.rol === 'cliente' && property.estado === 'disponible' && (
                 <div className="primary-actions">
-                  <button 
-                    className="btn-success"
-                    onClick={handlePurchase}
-                    disabled={isProcessing}
-                  >
-                    <span>💰</span>
-                    Comprar Propiedad
-                  </button>
-                  <button 
-                    className="btn-info"
-                    onClick={handleRent}
-                    disabled={isProcessing}
-                  >
-                    <span>🏠</span>
-                    Alquilar Propiedad
-                  </button>
+                  {/* Mostrar botón de Comprar solo si disponibilidad es 'venta' o 'ambos' Y no la ha comprado */}
+                  {(property.disponibilidad === 'venta' || property.disponibilidad === 'ambos') && !hasActiveSale && (
+                    <button 
+                      className="btn-success"
+                      onClick={handlePurchase}
+                      disabled={isProcessing}
+                    >
+                      <span>🏠</span>
+                      Comprar Propiedad
+                    </button>
+                  )}
+
+                  {/* Mensaje si ya compró esta propiedad */}
+                  {hasActiveSale && (
+                    <div className="already-rented-message">
+                      <span>✅</span>
+                      Ya compraste esta propiedad
+                    </div>
+                  )}
+                  
+                  {/* Mostrar botón de Alquilar solo si disponibilidad es 'alquiler' o 'ambos' Y no tiene alquiler activo */}
+                  {(property.disponibilidad === 'alquiler' || property.disponibilidad === 'ambos') && !hasActiveRental && (
+                    <button 
+                      className="btn-info"
+                      onClick={handleRentClick}
+                      disabled={isProcessing}
+                    >
+                      <span>🔑</span>
+                      Alquilar Propiedad
+                    </button>
+                  )}
+
+                  {/* Mensaje si ya tiene esta propiedad alquilada */}
+                  {hasActiveRental && (
+                    <div className="already-rented-message">
+                      <span>✅</span>
+                      Ya tienes esta propiedad alquilada
+                    </div>
+                  )}
                 </div>
               )}
               
               {/* Botones secundarios */}
               <div className="secondary-actions">
-                <button className="btn-primary">
-                  <span>📞</span>
-                  Contactar Agente
-                </button>
                 {user ? (
                   <button 
                     className={`btn-secondary ${isFavorite ? 'favorited' : ''}`}
@@ -293,10 +483,7 @@ const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite,
                     Iniciar Sesión para Favoritos
                   </button>
                 )}
-                <button className="btn-secondary">
-                  <span>📤</span>
-                  Compartir
-                </button>
+     
               </div>
               
               {/* Mensaje para propiedades no disponibles */}

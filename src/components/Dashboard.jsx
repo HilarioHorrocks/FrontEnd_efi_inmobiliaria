@@ -111,17 +111,17 @@ const Dashboard = () => {
       {/* Estadísticas financieras */}
       <div className="financial-stats">
         <div className="financial-card">
-          <h3>💵 Ingresos Totales</h3>
+          <h3>Ingresos Totales</h3>
           <div className="financial-amount">{formatCurrency(stats.ingresosTotales)}</div>
           <p>Por ventas y comisiones</p>
         </div>
         <div className="financial-card">
-          <h3>📈 Ventas Este Mes</h3>
+          <h3>Ventas Este Mes</h3>
           <div className="financial-amount">{stats.ventasEsteM}</div>
           <p>+{stats.ventasEsteM - stats.ventasMesAnterior} vs mes anterior</p>
         </div>
         <div className="financial-card">
-          <h3>🏠 Alquileres Activos</h3>
+          <h3>Alquileres Activos</h3>
           <div className="financial-amount">{stats.alquileresActivos}</div>
           <p>Contratos en curso</p>
         </div>

@@ -4,16 +4,14 @@ import './PropertyFilters.css';
 const PropertyFilters = ({ onFilterChange, onSearch }) => {
   const [filters, setFilters] = useState({
     tipo: '',
+    disponibilidad: '',
     precioMin: '',
     precioMax: '',
-    estado: '',
-    tamanosMin: '',
-    tamanosMax: '',
-    ubicacion: '',
     ordenarPor: 'precio-desc'
   });
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
@@ -33,19 +31,27 @@ const PropertyFilters = ({ onFilterChange, onSearch }) => {
           <div className="search-input-group">
             <input
               type="text"
-              placeholder="Buscar por dirección, tipo o descripción..."
+              placeholder="Buscar por dirección, tipo o descripció..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
             />
             <button type="submit" className="search-button">
-              🔍 Buscar
+              Buscar
+            </button>
+            <button 
+              type="button" 
+              className="toggle-filters-button"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              {isExpanded ? '▲ Ocultar Filtros' : '▼ Mostrar Filtros'}
             </button>
           </div>
         </form>
       </div>
 
-      <div className="filters-section">
+      {isExpanded && (
+        <div className="filters-section">
         <h3>Filtrar Propiedades</h3>
         
         <div className="filters-grid">
@@ -57,25 +63,26 @@ const PropertyFilters = ({ onFilterChange, onSearch }) => {
               onChange={(e) => handleFilterChange('tipo', e.target.value)}
             >
               <option value="">Todos los tipos</option>
-              <option value="departamento">Departamento</option>
+              <option value="apartamento">Apartamento</option>
               <option value="casa">Casa</option>
               <option value="loft">Loft</option>
               <option value="oficina">Oficina</option>
               <option value="local">Local Comercial</option>
+              <option value="terreno">Terreno</option>
             </select>
           </div>
 
-          {/* Estado */}
+          {/* Disponibilidad (venta/alquiler/ambos) */}
           <div className="filter-group">
-            <label>Estado</label>
+            <label>Disponibilidad</label>
             <select
-              value={filters.estado}
-              onChange={(e) => handleFilterChange('estado', e.target.value)}
+              value={filters.disponibilidad}
+              onChange={(e) => handleFilterChange('disponibilidad', e.target.value)}
             >
-              <option value="">Todos los estados</option>
-              <option value="disponible">Disponible</option>
-              <option value="vendida">Vendida</option>
-              <option value="alquilada">Alquilada</option>
+              <option value="">Todas</option>
+              <option value="ambos">Venta y Alquiler</option>
+              <option value="venta">Sólo Venta</option>
+              <option value="alquiler">Sólo Alquiler</option>
             </select>
           </div>
 
@@ -100,44 +107,6 @@ const PropertyFilters = ({ onFilterChange, onSearch }) => {
             />
           </div>
 
-          {/* Tamaño */}
-          <div className="filter-group">
-            <label>Tamaño Mínimo (m²)</label>
-            <input
-              type="number"
-              placeholder="Tamaño mínimo"
-              value={filters.tamanosMin}
-              onChange={(e) => handleFilterChange('tamanosMin', e.target.value)}
-            />
-          </div>
-
-          <div className="filter-group">
-            <label>Tamaño Máximo (m²)</label>
-            <input
-              type="number"
-              placeholder="Tamaño máximo"
-              value={filters.tamanosMax}
-              onChange={(e) => handleFilterChange('tamanosMax', e.target.value)}
-            />
-          </div>
-
-          {/* Ubicación */}
-          <div className="filter-group">
-            <label>Ubicación</label>
-            <select
-              value={filters.ubicacion}
-              onChange={(e) => handleFilterChange('ubicacion', e.target.value)}
-            >
-              <option value="">Todas las ubicaciones</option>
-              <option value="CABA">Ciudad de Buenos Aires</option>
-              <option value="Palermo">Palermo</option>
-              <option value="Puerto Madero">Puerto Madero</option>
-              <option value="Belgrano">Belgrano</option>
-              <option value="San Isidro">San Isidro</option>
-              <option value="Tigre">Tigre</option>
-            </select>
-          </div>
-
           {/* Ordenar por */}
           <div className="filter-group">
             <label>Ordenar por</label>
@@ -147,8 +116,6 @@ const PropertyFilters = ({ onFilterChange, onSearch }) => {
             >
               <option value="precio-desc">Precio: Mayor a Menor</option>
               <option value="precio-asc">Precio: Menor a Mayor</option>
-              <option value="tamanos-desc">Tamaño: Mayor a Menor</option>
-              <option value="tamanos-asc">Tamaño: Menor a Mayor</option>
               <option value="fecha-desc">Más Recientes</option>
             </select>
           </div>
@@ -160,12 +127,9 @@ const PropertyFilters = ({ onFilterChange, onSearch }) => {
             onClick={() => {
               setFilters({
                 tipo: '',
+                disponibilidad: '',
                 precioMin: '',
                 precioMax: '',
-                estado: '',
-                tamanosMin: '',
-                tamanosMax: '',
-                ubicacion: '',
                 ordenarPor: 'precio-desc'
               });
               setSearchTerm('');
@@ -173,10 +137,11 @@ const PropertyFilters = ({ onFilterChange, onSearch }) => {
               onSearch('');
             }}
           >
-            🗑️ Limpiar Filtros
+            Limpiar Filtros
           </button>
         </div>
       </div>
+      )}
     </div>
   );
 };

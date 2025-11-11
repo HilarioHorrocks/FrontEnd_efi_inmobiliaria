@@ -9,13 +9,14 @@ export default function PropertiesPage() {
   const { user } = useAuth()
   const { properties, loading, error, fetchProperties, createProperty, updateProperty, deleteProperty } =
     useProperties()
-  const [filters, setFilters] = useState({ estado: "disponible", tipo: "", precio: "" })
+  const [filters, setFilters] = useState({ estado: "disponible", tipo: "", precio: "", disponibilidad: "" })
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [formData, setFormData] = useState({
     direccion: "",
     tipo: "casa",
     precio: "",
+    disponibilidad: 'ambos',
     estado: "disponible",
     descripcion: "",
     tamano: "",
@@ -86,6 +87,7 @@ export default function PropertiesPage() {
       direccion: "",
       tipo: "casa",
       precio: "",
+      disponibilidad: 'ambos',
       estado: "disponible",
       descripcion: "",
       tamano: "",
@@ -121,6 +123,16 @@ export default function PropertiesPage() {
               <option value="casa">Casa</option>
               <option value="departamento">Departamento</option>
               <option value="local comercial">Local Comercial</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Disponibilidad</label>
+            <select name="disponibilidad" value={filters.disponibilidad || ''} onChange={handleFilterChange}>
+              <option value="">Todos</option>
+              <option value="ambos">Venta y Alquiler</option>
+              <option value="venta">Sólo Venta</option>
+              <option value="alquiler">Sólo Alquiler</option>
             </select>
           </div>
 
@@ -174,6 +186,15 @@ export default function PropertiesPage() {
                 <label>Tamaño (m²)</label>
                 <input type="number" name="tamano" value={formData.tamano} onChange={handleFormChange} step="0.01" />
               </div>
+            </div>
+
+            <div className="form-group">
+              <label>Disponibilidad</label>
+              <select name="disponibilidad" value={formData.disponibilidad} onChange={handleFormChange} required>
+                <option value="ambos">Venta y Alquiler</option>
+                <option value="venta">Sólo Venta</option>
+                <option value="alquiler">Sólo Alquiler</option>
+              </select>
             </div>
 
             <div className="form-group">

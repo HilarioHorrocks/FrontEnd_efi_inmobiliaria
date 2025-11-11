@@ -255,26 +255,28 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
+  padding: 14px 24px;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   text-decoration: none;
+  flex: 1;
+  justify-content: center;
+  min-width: 180px;
 }
 
 .btn-primary {
   background: #007bff;
   color: white;
-  flex: 1;
-  justify-content: center;
 }
 
 .btn-primary:hover {
   background: #0056b3;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
 .btn-secondary {
@@ -286,7 +288,8 @@
 .btn-secondary:hover {
   background: #e9ecef;
   color: #333;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary.favorited {
@@ -298,6 +301,8 @@
 .btn-secondary.favorited:hover {
   background: #c82333;
   border-color: #bd2130;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 .btn-secondary.disabled {
@@ -324,6 +329,10 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.secondary-actions .btn-secondary {
+  width: 100%;
 }
 
 .btn-success {
@@ -389,6 +398,27 @@
   font-weight: 500;
 }
 
+/* Mensaje de propiedad ya alquilada por el usuario */
+.already-rented-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: #d4edda;
+  border: 2px solid #28a745;
+  border-radius: 8px;
+  color: #155724;
+  font-weight: 600;
+  font-size: 1rem;
+  flex: 1;
+  min-width: 180px;
+}
+
+.already-rented-message span {
+  font-size: 1.2rem;
+}
+
 /* Mensaje de acción (procesando compra/alquiler) */
 .action-message {
   margin-top: 16px;
@@ -420,6 +450,200 @@
 .btn-info:disabled:hover {
   transform: none;
   box-shadow: none;
+}
+
+.action-message {
+  margin-top: 16px;
+  padding: 12px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Formulario de alquiler */
+.rental-form {
+  background: #f8f9fa;
+  border: 2px solid #007bff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.rental-form h3 {
+  margin: 0 0 8px 0;
+  color: #007bff;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+.rental-form .form-subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+.form-section {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.form-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.readonly-section {
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.readonly-input {
+  background: #f5f5f5 !important;
+  color: #666 !important;
+  cursor: not-allowed;
+  font-weight: 600;
+}
+
+.servicios-info {
+  padding: 8px 0;
+}
+
+.servicios-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.servicios-list li {
+  padding: 8px 12px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.no-servicios {
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+.contract-info {
+  padding: 12px;
+  background: white;
+  border-left: 4px solid #28a745;
+  border-radius: 4px;
+}
+
+.contract-info p {
+  margin: 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.rental-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.rental-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.rental-form label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.rental-form input[type="date"],
+.rental-form input[type="number"],
+.rental-form textarea {
+  padding: 10px 12px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.rental-form input:focus,
+.rental-form textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.rental-form textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.servicios-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #666;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: center;
+}
+
+.form-actions button {
+  flex: 1;
+  max-width: 200px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive */
@@ -455,5 +679,21 @@
   .btn-primary,
   .btn-secondary {
     justify-content: center;
+  }
+
+  .rental-form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .servicios-checkboxes {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    max-width: 100%;
   }
 }

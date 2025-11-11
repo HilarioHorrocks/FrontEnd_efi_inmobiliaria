@@ -6,8 +6,8 @@ export const rentalsService = {
   update: (id, data) => axiosInstance.put(`/rentals/${id}`, data),
   cancel: (id) => axiosInstance.delete(`/rentals/${id}`),
   // Nuevo: Alquiler directo de propiedad
-  rentProperty: (propertyId, durationMonths = 12) => axiosInstance.post("/rentals/rent", { 
+  rentProperty: (propertyId, rentalData) => axiosInstance.post("/rentals/rent", { 
     id_propiedad: propertyId,
-    duracion_meses: durationMonths
+    ...rentalData
   }),
 }
