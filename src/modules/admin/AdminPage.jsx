@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRentals } from "../contexts/RentalsContext"
-import { useSales } from "../contexts/SalesContext"
+import { useRentals } from "../../contexts/RentalsContext"
+import { useSales } from "../../contexts/SalesContext"
 import "./AdminPage.css"
 
 export default function AdminPage() {

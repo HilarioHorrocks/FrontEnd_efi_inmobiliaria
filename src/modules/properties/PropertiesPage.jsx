@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useAuth } from "../contexts/AuthContext"
-import { useProperties } from "../contexts/PropertiesContext"
+import { useAuth } from "../../contexts/AuthContext"
+import { useProperties } from "../../contexts/PropertiesContext"
 import "./PropertiesPage.css"
 
 export default function PropertiesPage() {

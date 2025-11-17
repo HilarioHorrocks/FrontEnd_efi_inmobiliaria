@@ -62,45 +62,71 @@ npm run preview
 ```
 frontend/
 ├── src/
-│   ├── components/
-│   │   ├── Dashboard.jsx         # Dashboard de propiedades
-│   │   ├── Navigation.jsx        # Barra de navegación
+│   ├── components/              # Componentes compartidos
+│   │   ├── Dashboard.jsx        # Dashboard de propiedades
+│   │   ├── Navigation.jsx       # Barra de navegación
 │   │   ├── NotificationSystem.jsx # Sistema de notificaciones
-│   │   ├── PropertyDetailsModal.jsx # Modal de detalles
-│   │   ├── PropertyFilters.jsx   # Filtros de búsqueda
-│   │   └── ProtectedRoute.jsx    # HOC para rutas protegidas
-│   ├── contexts/
-│   │   ├── AuthContext.jsx       # Contexto de autenticación
-│   │   ├── ClientsContext.jsx    # Contexto de clientes
+│   │   └── ProtectedRoute.jsx   # HOC para rutas protegidas
+│   ├── contexts/                # Gestión de estado global
+│   │   ├── AuthContext.jsx      # Contexto de autenticación
+│   │   ├── ClientsContext.jsx   # Contexto de clientes
 │   │   ├── PropertiesContext.jsx # Contexto de propiedades
-│   │   ├── RentalsContext.jsx    # Contexto de alquileres
-│   │   └── SalesContext.jsx      # Contexto de ventas
-│   ├── pages/
-│   │   ├── AdminPage.jsx         # Panel de administración
-│   │   ├── ClientsPage.jsx       # Gestión de clientes
-│   │   ├── ForgotPasswordPage.jsx # Recuperar contraseña
-│   │   ├── HomePage.jsx          # Página principal
-│   │   ├── LoginPage.jsx         # Inicio de sesión
-│   │   ├── MyRentalsPage.jsx     # Mis alquileres
-│   │   ├── MySalesPage.jsx       # Mis compras
-│   │   ├── ProfilePage.jsx       # Perfil de usuario
-│   │   ├── PropertiesPage.jsx    # CRUD de propiedades
-│   │   ├── RegisterPage.jsx      # Registro de usuario
-│   │   └── ResetPasswordPage.jsx # Restablecer contraseña
-│   ├── services/
-│   │   ├── api.js                # Configuración de Axios
-│   │   ├── auth.js               # Servicios de autenticación
-│   │   ├── clients.js            # Servicios de clientes
-│   │   ├── properties.js         # Servicios de propiedades
-│   │   ├── rentals.js            # Servicios de alquileres
-│   │   └── sales.js              # Servicios de ventas
-│   ├── utils/
-│   │   ├── pdfGenerator.js       # Generación de PDFs
-│   │   └── propertyImages.js     # Gestión de imágenes
-│   ├── App.jsx                   # Componente principal
-│   ├── App.css                   # Estilos globales
-│   ├── main.jsx                  # Punto de entrada
-│   └── tailwind.css              # Configuración de Tailwind
+│   │   ├── RentalsContext.jsx   # Contexto de alquileres
+│   │   └── SalesContext.jsx     # Contexto de ventas
+│   ├── modules/                
+│   │   ├── auth/                # Módulo de autenticación
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── RegisterPage.jsx
+│   │   │   ├── ForgotPasswordPage.jsx
+│   │   │   ├── ResetPasswordPage.jsx
+│   │   │   ├── AuthPages.css
+│   │   │   └── index.js
+│   │   ├── properties/          # Módulo de propiedades
+│   │   │   ├── PropertiesPage.jsx
+│   │   │   ├── PropertiesPage.css
+│   │   │   ├── PropertyDetailsModal.jsx
+│   │   │   ├── PropertyDetailsModal.css
+│   │   │   ├── PropertyFilters.jsx
+│   │   │   ├── PropertyFilters.css
+│   │   │   └── index.js
+│   │   ├── rentals/             # Módulo de alquileres
+│   │   │   ├── MyRentalsPage.jsx
+│   │   │   ├── MyRentalsPage.css
+│   │   │   └── index.js
+│   │   ├── sales/               # Módulo de ventas
+│   │   │   ├── MySalesPage.jsx
+│   │   │   ├── MySalesPage.css
+│   │   │   └── index.js
+│   │   ├── clients/             # Módulo de clientes
+│   │   │   ├── ClientsPage.jsx
+│   │   │   ├── ClientsPage.css
+│   │   │   └── index.js
+│   │   ├── profile/             # Módulo de perfil
+│   │   │   ├── ProfilePage.jsx
+│   │   │   ├── ProfilePage.css
+│   │   │   └── index.js
+│   │   ├── admin/               # Módulo de administración
+│   │   │   ├── AdminPage.jsx
+│   │   │   ├── AdminPage.css
+│   │   │   └── index.js
+│   │   └── home/                # Módulo de inicio
+│   │       ├── HomePage.jsx
+│   │       ├── HomePage.css
+│   │       └── index.js
+│   ├── services/                # Servicios API
+│   │   ├── api.js               # Configuración de Axios
+│   │   ├── auth.js              # Servicios de autenticación
+│   │   ├── clients.js           # Servicios de clientes
+│   │   ├── properties.js        # Servicios de propiedades
+│   │   ├── rentals.js           # Servicios de alquileres
+│   │   └── sales.js             # Servicios de ventas
+│   ├── utils/                   # Utilidades
+│   │   ├── pdfGenerator.js      # Generación de PDFs
+│   │   └── propertyImages.js    # Gestión de imágenes
+│   ├── App.jsx                  # Componente principal
+│   ├── App.css                  # Estilos globales
+│   ├── main.jsx                 # Punto de entrada
+│   └── tailwind.css             # Configuración de Tailwind
 │
 ├── .gitignore
 ├── index.html
@@ -109,19 +135,6 @@ frontend/
 ├── tailwind.config.js
 └── vite.config.js
 ```
-
-## 🔐 Autenticación
-
-La aplicación utiliza JWT almacenado en `localStorage`:
-
-- `token`: Token de autenticación
-- `user`: Datos del usuario actual
-
-### Flujo de autenticación:
-1. Usuario hace login → recibe token
-2. Token se guarda en localStorage
-3. Token se envía en cada request mediante interceptor de Axios
-4. Si token expira (401) → redirección automática a login
 
 ## 🎨 Páginas y Funcionalidades
 
@@ -168,113 +181,4 @@ La aplicación utiliza JWT almacenado en `localStorage`:
 - Gestionar clientes
 - Ver estadísticas
 - Acceso completo al sistema
-
-## 🎯 Características Destacadas
-
-### Sistema de Alquileres
-- Formulario completo con:
-  - Fechas de inicio y fin
-  - Monto mensual, depósito y administración
-  - Renovación automática
-  - Servicios incluidos
-  - Observaciones
-- Validación de alquileres duplicados
-- Estados: activo, finalizado, cancelado
-
-### Sistema de Ventas
-- Compra directa con un click
-- Validación de compras duplicadas
-- Estado: finalizada, cancelada
-- Cambio automático de estado de propiedad
-
-### Sistema de Favoritos
-- Guardar propiedades favoritas por usuario
-- Almacenamiento en localStorage
-- Vista filtrada de favoritos
-
-### Perfil de Usuario
-- Edición de información personal
-- Documento de identidad
-- Fecha de nacimiento
-- Teléfono y dirección
-- Estado civil
-- Profesión e ingresos mensuales
-
-### Generación de PDFs
-- Contratos de alquiler
-- Recibos de venta
-- Información completa de la transacción
-
-## 🎨 Estilos y UX
-
-- Diseño responsive
-- Tailwind CSS para estilos
-- Modales para detalles de propiedades
-- Sistema de notificaciones
-- Animaciones y transiciones
-- Imágenes dinámicas con Unsplash
-
-## 🔒 Seguridad
-
-- Rutas protegidas por rol
-- Redirección automática en sesión expirada
-- Validación de permisos en frontend
-- Interceptores de Axios para manejo de errores
-
-## 📱 Responsive Design
-
-La aplicación está optimizada para:
-- Desktop (1200px+)
-- Tablet (768px - 1199px)
-- Mobile (< 768px)
-
-## 🌐 Navegación
-
-### Usuario No Logueado
-```
-Inmobiliaria | Login | Registrar
-```
-
-### Cliente
-```
-Inmobiliaria | Propiedades | Mis Alquileres | Mis Compras | [Nombre Usuario] | Logout
-```
-
-### Agente/Admin
-```
-Inmobiliaria | Dashboard | Clientes | Admin | [Nombre Usuario] | Logout
-```
-
-## 🎭 Contextos Disponibles
-
-### AuthContext
-- `user`: Usuario actual
-- `login(email, password)`: Iniciar sesión
-- `logout()`: Cerrar sesión
-- `register(userData)`: Registrar usuario
-
-### PropertiesContext
-- `properties`: Lista de propiedades
-- `fetchProperties(filters)`: Obtener propiedades
-- `createProperty(data)`: Crear propiedad
-- `updateProperty(id, data)`: Actualizar propiedad
-- `deleteProperty(id)`: Eliminar propiedad
-
-### RentalsContext
-- `rentals`: Lista de alquileres
-- `fetchRentalsByUser(userId)`: Obtener alquileres del usuario
-- `createRental(data)`: Crear alquiler
-- `cancelRental(id)`: Cancelar alquiler
-
-### SalesContext
-- `sales`: Lista de ventas
-- `fetchSalesByUser(userId)`: Obtener compras del usuario
-- `cancelSale(id)`: Cancelar venta
-
-## 📝 Notas
-
-- Los favoritos se guardan en localStorage por usuario
-- Las imágenes son generadas dinámicamente con Unsplash
-- El sistema previene alquileres/compras duplicadas
-- Los PDFs se generan en el cliente
 

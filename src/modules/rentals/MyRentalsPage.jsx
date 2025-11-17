@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useAuth } from "../contexts/AuthContext"
-import { useRentals } from "../contexts/RentalsContext"
-import { useProperties } from "../contexts/PropertiesContext"
-import { generateRentalContract, downloadPDF } from "../utils/pdfGenerator"
+import { useAuth } from "../../contexts/AuthContext"
+import { useRentals } from "../../contexts/RentalsContext"
+import { useProperties } from "../../contexts/PropertiesContext"
+import { generateRentalContract, downloadPDF } from "../../utils/pdfGenerator"
 import "./MyRentalsPage.css"
 
 export default function MyRentalsPage() {

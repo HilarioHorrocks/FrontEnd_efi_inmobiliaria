@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { useProperties } from "../contexts/PropertiesContext"
-import { useAuth } from "../contexts/AuthContext"
-import { useRentals } from "../contexts/RentalsContext"
-import { useSales } from "../contexts/SalesContext"
-import PropertyDetailsModal from "../components/PropertyDetailsModal"
-import PropertyFilters from "../components/PropertyFilters"
-import { getPropertyImages } from "../utils/propertyImages"
+import { useProperties } from "../../contexts/PropertiesContext"
+import { useAuth } from "../../contexts/AuthContext"
+import { useRentals } from "../../contexts/RentalsContext"
+import { useSales } from "../../contexts/SalesContext"
+import { PropertyDetailsModal, PropertyFilters } from "../properties"
+import { getPropertyImages } from "../../utils/propertyImages"
 import "./HomePage.css"
 
 export default function HomePage() {
@@ -102,7 +101,7 @@ export default function HomePage() {
   return (
     <div className="home-page">
       <div className="hero-section">
-        <h1>Bienvenido a Inmobiliaria</h1>
+        <h1>Bienvenido a YHG Inmobiliaria</h1>
         <p>Encuentra tu propiedad ideal</p>
       </div>
 

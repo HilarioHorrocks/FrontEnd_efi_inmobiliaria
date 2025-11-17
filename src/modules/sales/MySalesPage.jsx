@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useAuth } from "../contexts/AuthContext"
-import { useSales } from "../contexts/SalesContext"
-import { useProperties } from "../contexts/PropertiesContext"
-import { generateSaleReceipt, downloadPDF } from "../utils/pdfGenerator"
+import { useAuth } from "../../contexts/AuthContext"
+import { useSales } from "../../contexts/SalesContext"
+import { useProperties } from "../../contexts/PropertiesContext"
+import { generateSaleReceipt, downloadPDF } from "../../utils/pdfGenerator"
 import "./MySalesPage.css"
 
 export default function MySalesPage() {

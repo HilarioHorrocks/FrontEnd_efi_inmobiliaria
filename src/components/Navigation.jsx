@@ -16,7 +16,7 @@ export const Navigation = () => {
     <nav className="navbar">
       <div className="nav-container">
         <Link to="/" className="nav-logo">
-          Inmobiliaria
+          YHG INMOBILIARIA
         </Link>
         <ul className="nav-menu">
           {!user ? (

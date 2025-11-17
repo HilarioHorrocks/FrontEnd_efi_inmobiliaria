@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { getPropertyImages, getLocationSpecificImages } from '../utils/propertyImages';
-import { salesService } from '../services/sales';
-import { rentalsService } from '../services/rentals';
-import { useProperties } from '../contexts/PropertiesContext';
-import { useRentals } from '../contexts/RentalsContext';
-import { useSales } from '../contexts/SalesContext';
+import { getPropertyImages, getLocationSpecificImages } from '../../utils/propertyImages';
+import { salesService } from '../../services/sales';
+import { rentalsService } from '../../services/rentals';
+import { useProperties } from '../../contexts/PropertiesContext';
+import { useRentals } from '../../contexts/RentalsContext';
+import { useSales } from '../../contexts/SalesContext';
 import './PropertyDetailsModal.css';
 
 const PropertyDetailsModal = ({ property, onClose, onToggleFavorite, isFavorite, user, userRentals = [], userSales = [] }) => {

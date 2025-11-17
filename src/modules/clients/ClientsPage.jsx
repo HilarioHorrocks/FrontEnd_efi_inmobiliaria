@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useClients } from "../contexts/ClientsContext"
+import { useClients } from "../../contexts/ClientsContext"
 import "./ClientsPage.css"
 
 export default function ClientsPage() {
